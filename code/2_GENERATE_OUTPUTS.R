@@ -7,11 +7,11 @@
 # - post.arr 
 # - coda
 # create coda file
-#Gelman statistic
-#Brooks and Gelman (1997) have suggested, if Rc<1.2 for all model parameters, 
-#one can be fairly confident that convergence has been reached. Otherwise, longer chains or other means for improving the convergence may be needed
-#Brooks, S. P., and A. Gelman. 1997. General Methods for Monitoring Convergence of Iterative Simulations. 
-#Journal of Computational and Graphical Statistics 7: 434–455.
+# Gelman statistic
+# Brooks and Gelman (1997) have suggested, if Rc<1.2 for all model parameters, 
+# one can be fairly confident that convergence has been reached. Otherwise, longer chains or other means for improving the convergence may be needed
+# Brooks, S. P., and A. Gelman. 1997. General Methods for Monitoring Convergence of Iterative Simulations. 
+# Journal of Computational and Graphical Statistics 7: 434–455.
 
 # Numerical summary of each parameter (mean, median, quantiles of posteriers)----
 summary<-summary(post)  
@@ -122,7 +122,7 @@ coda %>%
 coda %>% 
   dplyr::select(Umsy) -> Umsy
 
-#denplot(Smsy, style="plain",  col="gray30", xlim=)
+# denplot(Smsy, style="plain",  col="gray30", xlim=)
 options(scipen=999)
 ggplot(Smsy, aes(x=Smsy, fill=Smsy, color = Smsy)) +
   geom_density(fill ="#999999", alpha=0.5)+
@@ -210,10 +210,6 @@ x <- post.arr[,parameters,]
 sigma.white <- quantile(x, probs=c(0, 0.025, 0.05, 0.5, 0.95, 0.975, 1))
 sigma.white <- data.frame(sigma.white)
 
-parameters = c('phi')
-x <- post.arr[,parameters,]
-phi <- quantile(x, probs=c(0, 0.025, 0.05, 0.5, 0.95, 0.975, 1))
-phi <- data.frame(phi)
 
 step1 <- cbind(MSY, S.eq)
 step2 <- cbind(step1, S.max)
@@ -226,8 +222,7 @@ step8 <- cbind(step7, lnalpha.c)
 step9 <- cbind(step8, resid.red.0)
 step10 <- cbind(step9,  sigma.red)
 step11 <- cbind(step10,  sigma.white)
-step12 <- cbind(step11,  phi)
-step12 %>% 
+step11 %>% 
   t()%>%
   write.csv(., file= paste0(out.path,"/percentiles.csv")) 
 

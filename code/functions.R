@@ -74,11 +74,11 @@ profile <-function(i,z,xa.start, xa.end,lnalpha.c, beta){
  
    qm <- qm %>% 
     mutate_if(is.numeric, round, digits = 6)
-  write.csv(qm,("state_space_model/output/rjags_Full_BaseCase/processed/QM.csv"), row.names=FALSE)
+  write.csv(qm,("output/base_model/processed/QM.csv"), row.names=FALSE)
   
   Y <- Y %>% 
     mutate_if(is.numeric, round, digits = 6)
-  write.csv(Y,("state_space_model/output/rjags_Full_BaseCase/processed/Y.csv"), row.names=FALSE)
+  write.csv(Y,("output/base_model/processed/Y.csv"), row.names=FALSE)
 
   
 # confidence intervals ----
@@ -100,9 +100,9 @@ CI <- CI[c("q95", "q90", "Median","q10", "q5", "escapement")]
   
 CI <- CI %>% 
     mutate_if(is.numeric, round, digits = 6)
-write.csv(CI,("state_space_model/output/rjags_Full_BaseCase/processed/CI.csv"), row.names=FALSE)
+write.csv(CI,("output/base_model/processed/CI.csv"), row.names=FALSE)
   
-read.csv("state_space_model/output/rjags_Full_BaseCase/processed/Y.csv") -> Y
+read.csv("output/base_model/processed/Y.csv") -> Y
 
 Y %>% 
     dplyr::select(escapement, oy_0.9, oy_0.8, oy_0.7) %>% 
@@ -140,21 +140,21 @@ my4 %>%
     geom_rect(aes(xmin = LowerB, xmax = UpperB, ymin = 0, ymax = 1),
               inherit.aes = FALSE, fill = "grey80", alpha = 0.3) +
     geom_line()+xlab('Escapement (S)')+
-    scale_x_continuous(labels = comma, breaks = seq(0, 200000, 25000), limits = c(0, 200000))+
+    scale_x_continuous(labels = comma, breaks = seq(0, 125000, 25000), limits = c(0, 125000))+
     scale_linetype_discrete(name = "Percent of Max.")+
     facet_grid(sra ~ .) +geom_vline(xintercept=SMSY, lwd=1.25)+
     theme(legend.position="bottom") + theme(legend.title=element_blank())
   options(scipen=99999)
-  ggsave("state_space_model/output/rjags_Full_BaseCase/processed/0.8_0.9_0.7.png", dpi=500, dev='png', width=7, height=6, units='in')
+  ggsave("output/base_model/processed/0.8_0.9_0.7.png", dpi=500, dev='png', width=7, height=6, units='in')
   
   ggplot(qm, aes(escapement, Median))+geom_line(size=1)+
     geom_ribbon(aes(ymin = q5, ymax = q95), alpha=.15)+
     geom_ribbon(aes(ymin = q10, ymax = q90), alpha=.15)+ xlab('Escapement (S)')+
     ylab('Expected Yield')+scale_y_continuous(labels = comma)+
-    scale_x_continuous(labels = comma,breaks = seq(0, 300000, 50000), limits = c(0,300000))+
-    scale_y_continuous(labels = comma,breaks = seq(-600000, 600000, 100000), limits = c(-600000,600000))+
+    scale_x_continuous(labels = comma,breaks = seq(0, 125000, 25000), limits = c(0,125000))+
+    scale_y_continuous(labels = comma,breaks = seq(-125000, 125000, 25000), limits = c(-125000,125000))+
     geom_vline(xintercept = LowerB,linetype = "longdash" )+geom_vline(xintercept = UpperB ,linetype = "longdash")
-  ggsave("state_space_model/output/rjags_Full_BaseCase/processed/expected_sustained_yield.png", dpi=500, width=8, height=5, units='in')
+  ggsave("output/base_model/processed/expected_sustained_yield.png", dpi=500, width=8, height=5, units='in')
 
 my4 %>%
   filter(sra == "Yield Profile") -> fig_data1
@@ -167,34 +167,34 @@ my4 %>%
 
 # plot for SEAK escapement report (July 2020)
 ggplot(fig_data1, aes(x = escapement, y = Probability, linetype = max_pct)) + ggtitle("(c) Yield Profile") + 
-  annotate("rect", xmin = 38000, xmax = 86000, ymin = 0, ymax = 1,
+  annotate("rect", xmin = 10000, xmax = 25000, ymin = 0, ymax = 1,
            inherit.aes = FALSE, fill = "grey80", alpha = 0.9) +
   theme(plot.title = element_text(size = 12, face = "bold"),
         strip.text.y = element_text(size=0),legend.position="none") +
   geom_line() +
-  scale_x_continuous(labels = comma, breaks = seq(0, 200000, 25000), limits = c(0, 200000))+
+  scale_x_continuous(labels = comma, breaks = seq(0, 80000, 10000), limits = c(0,80000))+
   scale_y_continuous(breaks = seq(0, 1, 0.25), limits = c(0, 1))+
   scale_linetype_discrete(name = "Percent of Max.") + xlab('Escapement (S)')+
   facet_grid(sra ~ .) -> plot1
 
 ggplot(fig_data2, aes(x = escapement, y = Probability, linetype = max_pct)) + 
-  annotate("rect", xmin = 38000, xmax = 86000, ymin = 0, ymax = 1,
+  annotate("rect", xmin = 10000, xmax = 25000, ymin = 0, ymax = 1,
            inherit.aes = FALSE, fill = "grey80", alpha = 0.9) + ggtitle("(a) Overfishing Profile") + 
   theme(plot.title = element_text(size = 12, face = "bold"),
         strip.text.y = element_text(size=0),legend.position=c(0.92,0.86), legend.title = element_blank()) +
   geom_line() + xlab('Escapement (S)') +
-  scale_x_continuous(labels = comma, breaks = seq(0, 200000, 25000), limits = c(0, 200000))+
+  scale_x_continuous(labels = comma, breaks = seq(0, 80000, 10000), limits = c(0, 80000))+
   scale_linetype_discrete(name = "Percent of Max.") + 
   facet_grid(sra ~ .)-> plot2
 
 ggplot(fig_data3, aes(x = escapement, y = Probability, linetype = max_pct)) + 
-  annotate("rect", xmin = 38000, xmax = 86000, ymin = 0, ymax = 1,
+  annotate("rect", xmin = 10000, xmax = 25000, ymin = 0, ymax = 1,
            inherit.aes = FALSE, fill = "grey80", alpha = 0.9) + ggtitle("(b) Recruitment Profile") + 
   theme(plot.title = element_text(size = 12, face = "bold"),
         strip.text.y = element_text(size=0),legend.position= "none") +
   geom_line() + xlab('Escapement (S)') +  
-  scale_x_continuous(labels = comma, breaks = seq(0, 200000, 25000), limits = c(0, 200000))+
+  scale_x_continuous(labels = comma, breaks = seq(0, 80000, 10000), limits = c(0, 80000))+
   scale_linetype_discrete(name = "Percent of Max.") +
   facet_grid(sra ~ .)  -> plot3
 cowplot::plot_grid(plot2,plot3,plot1, align = "v", nrow = 3, ncol=1) 
-ggsave("state_space_model/output/rjags_Full_BaseCase/processed/report_plot.png", dpi = 500, height = 7, width = 6, units = "in")}
+ggsave("output/base_model/processed/report_plot.png", dpi = 500, height = 7, width = 6, units = "in")}

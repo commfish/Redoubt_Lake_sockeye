@@ -1,13 +1,12 @@
-#Chilkoot sockeye state space model
-#authors: Rich Brenner & Sara E Miller 
-#contact: 
-#Last edited: September 2019
-#must download program JAGS for this script to work
+# Redoubt Lake sockeye state space model
+# authors: Rich Brenner & Sara E Miller 
+# contact: 
+# Last edited: December 2020
+# must download program JAGS for this script to work
 
 # warning: some of these packages mask commands, so need to specify the package when calling the fn
 # runjags::extract vs. tidyr::extract
 # coda::traceplot vs. R2jags::traceplot
-####BE SURE TO CHECK THAT THE model_data.R FILE AND ASSOCIATED BROOD TABLE ARE UPDATED BEFORE PROCEEDING####
 
 # load libraries----
 library(coda)
@@ -28,7 +27,7 @@ library(cowplot)
 
 # if test runs then do sensitivity tests with explore, and final run with full
 # "explore" version takes ~10min with the current settings.
-out.label <-  "rjags_Full_BaseCase" 
+out.label <-  "base_model" 
 package.use <- "rjags"  #"rjags"  or "R2jags"
 jags.settings <- "full"  # "test" or "explore" or full" 
 
@@ -36,17 +35,17 @@ jags.settings <- "full"  # "test" or "explore" or full"
 # then write the model to a text file to be called by JAGS if using rjags version
 # if used R2Jags, can just use the "mod" object directly
 # if you get a dmulti error, then the age comps are not whole numbers
-source("state_space_model/code/model_source.R") 
+source("code/model_source.R") 
 print(mod)
 write.model(mod, model_file_loc)
-model_file_loc=paste("state_space_model/code/","Chilkoot_sockeye.txt", sep="") # where to write the model file
+model_file_loc=paste("code/","Redoubt_sockeye.txt", sep="") # where to write the model file
 
 # define the parameters (nodes) of interest (pars to be tracked in the MCMC)
 parameters <- c("lnalpha","beta", "sigma.red","S.msy","MSY", "lnalpha.c", "alpha", "S.max", "S.eq","U.msy", "sigma.white",
-                "resid.red.0", "phi")
+                "resid.red.0")
 
 # create output folder for model results
-out.path <- paste0("state_space_model/output/", out.label)
+out.path <- paste0("output/", out.label)
 if(!exists(out.path)){dir.create(out.path)}
 
 if(jags.settings == "test"){
@@ -66,12 +65,11 @@ if(jags.settings == "full"){
 }
 
 # STEP 2: READ IN DATA, MODEL, AND INITIAL VALUES----
-######MAKE SURE THAT brood DATA and PATH ARE UPDATED!!!!#######
 # generates the object "dat"
-source("state_space_model/code/model_data.R")
+source("code/model_data.R")
 
 # generate initial values
-source("state_space_model/code/model_inits.R")
+source("code/model_inits.R")
 
 # STEP 3: RUN THE MODEL AND PROCESS THE OUTPUT----
 # 2 options: rjags or R2jags
@@ -104,7 +102,7 @@ if(package.use == "R2jags"){ # new version
   write.csv(mcmc.samples, file= paste0(out.path,"/coda_allpars.csv") ,row.names=FALSE)    # writes csv file
   
   conv.pars <- c("lnalpha","beta", "sigma.red","S.msy","MSY", "lnalpha.c", "alpha", "S.max", "S.eq","U.msy", "sigma.white",
-                 "resid.red.0", "phi")
+                 "resid.red.0")
   
   conv.details <- checkConvergence(mcmc.out = r2jags.out, vars.check = conv.pars)
   
@@ -123,15 +121,15 @@ if(package.use == "R2jags"){ # new version
 #rjags
 if(package.use == "rjags"){
   parameters <- c("lnalpha","beta", "sigma.red","S.msy","MSY", "lnalpha.c", "alpha", "S.max", "S.eq","U.msy", "sigma.white",
-                  "resid.red.0", "phi")
-  jmod <- rjags::jags.model(file='state_space_model/code/Chilkoot_sockeye.txt', data=dat, n.chains=3, inits=inits, n.adapt=n.adapt.use) 
+                  "resid.red.0")
+  jmod <- rjags::jags.model(file='code/Redoubt_sockeye.txt', data=dat, n.chains=3, inits=inits, n.adapt=n.adapt.use) 
   stats::update(jmod, n.iter=n.iter.use, by=by.use, progress.bar='text', DIC=T, n.burnin=n.burnin.use) # this modifies the original object, function returns NULL
   post <- rjags::coda.samples(jmod, parameters, n.iter=n.iter.use, thin=thin.use, n.burnin=n.burnin.use)
   
   end.jags <- proc.time()   # store time for MCMC
   post.arr <- as.array(post) # convert to an accessible obj
   
-  source("state_space_model/code/2_GENERATE_OUTPUTS.R")
+  #source("code/2_GENERATE_OUTPUTS.R")
 }
 end.output  <- proc.time() 
 
