@@ -5,10 +5,10 @@
 
 LowerB <- 10000 #lower bound of recommended escapement goal range
 UpperB <- 25000 #upper bound of recommended escapement goal range
-SMSY <- 18576 #Lambert W version of SMSY from file: AR_quantiles_lambert
-lnalpha.c <- 2.20182453737131
-lnalpha <- 1.70229459122086
-beta <- 0.0000407570166790281  #let's try and grab these last 4 parameter outputs from the "stats.csv" output
+SMSY <- 18174.978 #Lambert W version of SMSY from file: AR_quantiles_lambert
+lnalpha.c <- 2.58690031604307
+lnalpha <- 2.07841039608424
+beta <- 0.0000449797444705782  
 
 
 #load----
@@ -80,7 +80,7 @@ spawnrecruitdat %>%
 
 ggplot(data=dataset, aes(x=escapement, y=recruitment, group=variable))+
   geom_line(data=subset(dataset,dataset$variable<52),linetype="solid", size=0.5, color="grey80")+
-  scale_y_continuous(labels = comma,breaks = seq(0, 175000, 25000), limits = c(0, 175000))+
+  scale_y_continuous(labels = comma,breaks = seq(0, 250000, 25000), limits = c(0, 250000))+
   scale_x_continuous(labels= comma,breaks = seq(0, 150000, 25000), limits = c(0, 150000))+
   ylab("Recruits (R)")+xlab("Spawners (S)")+
   geom_line(data=dataset, aes(x=escapement, y=escapement, group=1),linetype="solid", size=1)+#replacement line
@@ -121,7 +121,7 @@ ggplot(data=dataset1, aes(x=escapement, y=Median, group=variable)) +
   geom_ribbon(aes(ymin = q10, ymax = q90, group=51), alpha=.08) +
   xlab('Spawners (S)') +
   ylab('Recruits (R)') +
-  scale_y_continuous(labels = comma,breaks = seq(0, 175000, 25000), limits = c(0, 175000)) +
+  scale_y_continuous(labels = comma,breaks = seq(0, 250000, 25000), limits = c(0, 250000)) +
   scale_x_continuous(labels = comma,breaks = seq(0, 150000, 25000), limits = c(0, 150000)) +
   geom_line(aes(x=escapement, y=escapement, group=51),linetype="solid", size=1) +
   geom_point(data=dataset1, aes(x=x.t, y=y.t, group=52),pch=16, size=1) +
